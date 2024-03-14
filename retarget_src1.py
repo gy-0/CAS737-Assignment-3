@@ -1,14 +1,11 @@
 import BVH
 import Animation
 from IK import IK
+import numpy as np
 
 '''load src'''
-src_bvh_path = 'src1-distinct-jog.bvh'
+src_bvh_path = 'src1-distinct-jog-4388.bvh'
 src_anim, src_jointnames, src_frmtime = BVH.load(src_bvh_path)
-
-'''scale and adjust bone length, e.g. scale left leg by 0.6'''
-src_anim.offsets[3, :] = src_anim.offsets[3, :] * 0.6
-src_anim.positions[:, 3, :] = src_anim.positions[:, 3, :] * 0.6
 
 '''get world space positions'''
 src_positions_ws = Animation.positions_global(src_anim)  # (F, J, 3) joint positions in world space
@@ -16,8 +13,11 @@ src_positions_ws = Animation.positions_global(src_anim)  # (F, J, 3) joint posit
 '''load target skeleton'''
 dest_bvh_path = 'dest.bvh'
 dest_anim, dest_jointnames, dest_frmtime = BVH.load(dest_bvh_path)
-dest_F = 1
+
 #TODO: dest_F should be src motion's length F, so expand dest_anim to F frames accordly here
+dest_anim = dest_anim.repeat(len(src_anim) // len(dest_anim), axis=0)
+src_anim.positions[:, 0, :]+= dest_anim.positions[0, 0, :] - src_anim.positions[0, 0, :]
+dest_anim.positions[:,0,:] = src_anim.positions[:, 0, :]
 
 '''set goal positions
 goal_positions[j] are joint j's goal positions
