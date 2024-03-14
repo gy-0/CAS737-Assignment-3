@@ -54,6 +54,16 @@ joint_mapping = {
     'Spine1': 'Chest2',
 }
 
+for dest_joint, src_joint in joint_mapping.items():
+    if src_joint in src_jointnames and dest_joint in dest_jointnames:
+        dest_anim.rotations[:, dest_jointnames.index(dest_joint)] = src_anim.rotations[:, src_jointnames.index(src_joint)]
+
+for dest_joint, src_joint in joint_mapping.items():
+    if dest_joint in dest_jointnames and src_joint in src_jointnames:
+        scale = (np.linalg.norm(dest_anim.offsets[dest_jointnames.index(dest_joint)]) + 0.0001) / (np.linalg.norm(src_anim.offsets[src_jointnames.index(src_joint)]) + 0.0001)
+        src_anim.positions[:, src_jointnames.index(src_joint), :] *= scale
+        src_anim.offsets[src_jointnames.index(src_joint)] *= scale
+
 '''set goal positions
 goal_positions[j] are joint j's goal positions
 goal_positions[j] is of shape (F, 3), i.e. F number of frames, each frame is (x,y,z)
