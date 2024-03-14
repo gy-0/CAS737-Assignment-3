@@ -64,20 +64,14 @@ for dest_joint, src_joint in joint_mapping.items():
         src_anim.positions[:, src_jointnames.index(src_joint), :] *= scale
         src_anim.offsets[src_jointnames.index(src_joint)] *= scale
 
-'''set goal positions
-goal_positions[j] are joint j's goal positions
-goal_positions[j] is of shape (F, 3), i.e. F number of frames, each frame is (x,y,z)
-'''
+
 goal_positions = {}
-for j in range(0, dest_anim.shape[1]):
-    mapped_j_src = j #TODO: make your own map between src and target
-    goal_positions[j] =  src_positions_ws[0:dest_F, mapped_j_src]
-    print('goal_positions[k]', mapped_j_src, goal_positions[j].shape)
+for dest_joint, src_joint in joint_mapping.items():
+    if dest_joint in dest_jointnames and src_joint in src_jointnames:
+        goal_positions[dest_jointnames.index(dest_joint)] = Animation.positions_global(src_anim)[:, src_jointnames.index(src_joint)]
+        print(goal_positions[dest_jointnames.index(dest_joint)].shape)
 
-
-'''reach goals through IK'''
 ik = IK(dest_anim, goal_positions, iterations=20, damping=2.0)
 ik()
 
-BVH.save(dest_bvh_path + '_retargeted_result.bvh', dest_anim, dest_jointnames, dest_frmtime)
-
+BVH.save('dest-distinct-jog-4388.bvh', dest_anim, dest_jointnames, dest_frmtime)
