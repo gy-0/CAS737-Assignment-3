@@ -72,3 +72,12 @@ for src_joint in src_jointnames:
         src_anim.positions[:, src_jointnames.index(src_joint), :] *= 0
 
 
+goal_positions = {}
+for dest_joint, src_joint in joint_mapping.items():
+    if src_joint in src_jointnames and dest_joint in dest_jointnames:
+        goal_positions[dest_jointnames.index(dest_joint)] = Animation.positions_global(src_anim)[:, src_jointnames.index(src_joint)]
+        print(goal_positions[dest_jointnames.index(dest_joint)].shape)
+
+ik = IK(dest_anim, goal_positions, iterations=20, damping=2.0)
+ik()
+BVH.save('dest-mixamo-walkTurn.bvh', dest_anim, dest_jointnames, dest_frmtime)
