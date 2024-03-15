@@ -4,7 +4,7 @@ from IK import IK
 import numpy as np
 
 '''load src'''
-src_bvh_path = 'src1-distinct-jog-4388.bvh'
+src_bvh_path = 'src2-mixamo-walkTurn.bvh'
 src_anim, src_jointnames, src_frmtime = BVH.load(src_bvh_path)
 
 '''get world space positions'''
@@ -16,8 +16,12 @@ dest_anim, dest_jointnames, dest_frmtime = BVH.load(dest_bvh_path)
 
 #TODO: dest_F should be src motion's length F, so expand dest_anim to F frames accordly here
 dest_anim = dest_anim.repeat(len(src_anim) // len(dest_anim), axis=0)
-src_anim.positions[:, 0, :]+= dest_anim.positions[0, 0, :] - src_anim.positions[0, 0, :]
-dest_anim.positions[:,0,:] = src_anim.positions[:, 0, :]
+dest_frmtime=src_frmtime
+
+
+# Set position
+src_anim.positions[:, 0, :] += dest_anim.positions[0, 0, :] - src_anim.positions[0, 0, :]
+dest_anim.positions[:, 0, :] = src_anim.positions[:, 0, :]
 
 # dest:src
 joint_mapping = {
